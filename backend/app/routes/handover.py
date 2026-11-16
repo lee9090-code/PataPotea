@@ -15,11 +15,43 @@ handover_bp = Blueprint('handover', __name__)
 @handover_bp.post('/<int:claim_id>')
 @role_required('guard')
 def record_handover(claim_id):
-    # TODO: verify claim exists and status == 'approved'
-    # TODO: validate id_checked == True and signature_data is present
-    # TODO: create Handover record (guard_id, id_checked, signature_data, collected_at)
-    # TODO: update claim.status → 'collected'
-    # TODO: update item.status → 'collected'
-    # TODO: write AuditLog entry ('item_collected')
-    # TODO: return success response
-    return jsonify({'message': 'record_handover – TODO'}), 501
+    claim = Claim.query.get_or_404(claim_id)
+    item = claim.item
+
+    if claim.status != 'approved':
+        return jsonify({'error': 'Only approved claims can be handed over'}), 400
+
+    id_checked = request.json.get('idChecked') if request.is_json else None
+    signature_data = request.json.get('signatureData') if request.is_json else None
+
+    if not id_checked:
+        return jsonify({'error': 'ID must be checked before collection'}), 400
+    if not signature_data:
+        return jsonify({'error': 'Owner signature is required before collection'}), 400
+
+    handover = Handover(
+        claim_id=claim.id,
+        guard_id=get_jwt_identity(),
+        id_checked=True,
+        signature_data=signature_data,
+    )
+    db.session.add(handover)
+
+    # This is the one moment both records become final.
+    claim.status = 'collected'
+    item.status = 'collected'
+
+    db.session.add(AuditLog(
+        action='item_collected',
+        actor_id=get_jwt_identity(),
+        record_type='claim',
+        record_id=claim.reference,
+    ))
+    db.session.commit()
+
+    return jsonify({
+        'claimReference': claim.reference,
+        'itemReference': item.reference,
+        'status': 'collected',
+        'collectedAt': handover.collected_at.isoformat(),
+    }), 201
