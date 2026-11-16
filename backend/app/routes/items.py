@@ -10,6 +10,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import db
 from ..models import Item, AuditLog
+from ..models.item import ITEM_STATUSES
 from ..utils.decorators import role_required
 from ..utils.helpers import save_upload, next_reference
 
@@ -36,14 +37,23 @@ def list_items():
     if area:
         query = query.filter(Item.location_found == area)
 
+    # date_range as "2026-11-01,2026-11-16" — a single query param holding two dates
+    date_range = request.args.get('date_range')
+    if date_range and ',' in date_range:
+        start_str, end_str = date_range.split(',', 1)
+        query = query.filter(Item.date_found.between(start_str, end_str))
+
     items = query.order_by(Item.date_found.desc()).all()
     return jsonify([item.to_public_dict() for item in items]), 200
 
 
 @items_bp.get('/<int:item_id>')
 def get_item(item_id):
-    # TODO: return item.to_public_dict()
-    return jsonify({'message': 'get_item – TODO'}), 501
+    # Item.query.get_or_404 fetches by primary key, or automatically
+    # returns a 404 response if no row with that id exists. Saves us
+    # from writing "if item is None: return 404" by hand every time.
+    item = Item.query.get_or_404(item_id)
+    return jsonify(item.to_public_dict()), 200
 
 
 @items_bp.post('/')
@@ -97,6 +107,20 @@ def log_item():
 @items_bp.patch('/<int:item_id>/status')
 @role_required('guard', 'admin')
 def update_status(item_id):
-    # TODO: validate new status is a valid ITEM_STATUS
-    # TODO: update item.status, write AuditLog, return updated item
-    return jsonify({'message': 'update_status – TODO'}), 501
+    item = Item.query.get_or_404(item_id)
+
+    new_status = request.json.get('status') if request.is_json else None
+    if new_status not in ITEM_STATUSES:
+        return jsonify({'error': f'status must be one of {ITEM_STATUSES}'}), 400
+
+    item.status = new_status
+    db.session.add(AuditLog(
+        action='item_status_updated',
+        actor_id=get_jwt_identity(),
+        record_type='item',
+        record_id=item.reference,
+        detail=f'status changed to {new_status}',
+    ))
+    db.session.commit()
+
+    return jsonify(item.to_public_dict()), 200
