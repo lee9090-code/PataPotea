@@ -10,7 +10,6 @@ instance/
 # Flask
 backend/.env
 backend/uploads/
-backend/migrations/versions/
 
 # Node
 frontend/node_modules/
