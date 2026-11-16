@@ -7,57 +7,160 @@ Endpoints:
   GET   /api/claims/<id>          — guard/admin: full claim with private evidence
   PATCH /api/claims/<id>/decision — guard: approve or reject
 """
+from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import db
-from ..models import Claim, Item
+from ..models import Claim, Item, AuditLog
+from ..models.claim import MAX_CLAIM_ATTEMPTS
 from ..utils.decorators import role_required
+from ..utils.helpers import save_upload, next_reference
 
 claims_bp = Blueprint('claims', __name__)
+
+ALLOWED_PROOF_TYPES = {'jpg', 'jpeg', 'png', 'pdf'}
+
+
+def claim_summary_dict(claim):
+    """Shared shape for list views (My Claims, Pending Claims tables)."""
+    return {
+        'id': claim.id,
+        'reference': claim.reference,
+        'itemReference': claim.item.reference,
+        'itemDescription': claim.item.public_description,
+        'status': claim.status,
+        'submittedAt': claim.submitted_at.isoformat(),
+    }
 
 
 @claims_bp.post('/')
 @jwt_required()
 def submit_claim():
-    # TODO: get current user (student/staff only)
-    # TODO: check item exists and status is in_store
-    # TODO: enforce MAX_CLAIM_ATTEMPTS per (user, item) pair
-    # TODO: save optional proof file via save_upload()
-    # TODO: generate CL-XXXX reference
-    # TODO: create Claim, update item status → claim_pending
-    # TODO: write AuditLog, return 201
-    return jsonify({'message': 'submit_claim – TODO'}), 501
+    item_id = request.form.get('itemId')
+    item = Item.query.get_or_404(item_id)
+
+    if item.status != 'in_store':
+        return jsonify({'error': 'This item is not available to claim'}), 400
+
+    claimant_id = get_jwt_identity()
+
+    # Count this user's past attempts on this specific item, not all their claims.
+    attempts = Claim.query.filter_by(item_id=item.id, claimant_id=claimant_id).count()
+    if attempts >= MAX_CLAIM_ATTEMPTS:
+        return jsonify({'error': 'You have reached the maximum number of attempts for this item'}), 400
+
+    proof_file = request.files.get('proof')
+    proof_url = save_upload(proof_file, 'claims', ALLOWED_PROOF_TYPES) if proof_file else None
+
+    claim = Claim(
+        reference=next_reference('CL', Claim, 'reference'),
+        item_id=item.id,
+        claimant_id=claimant_id,
+        identifying_marks=request.form.get('identifyingMarks'),
+        hidden_details=request.form.get('hiddenDetails'),
+        lost_when_where=request.form.get('lostWhenWhere'),
+        proof_url=proof_url,
+    )
+    db.session.add(claim)
+
+    # The item is reserved the moment a claim is submitted, so nobody
+    # else can submit a competing claim while this one is reviewed.
+    item.status = 'claim_pending'
+
+    db.session.add(AuditLog(
+        action='claim_submitted',
+        actor_id=claimant_id,
+        record_type='claim',
+        record_id=claim.reference,
+    ))
+    db.session.commit()
+
+    return jsonify(claim_summary_dict(claim)), 201
 
 
 @claims_bp.get('/mine')
 @jwt_required()
 def my_claims():
-    # TODO: return all claims where claimant_id == current user id
-    return jsonify([]), 200
+    claimant_id = get_jwt_identity()
+    claims = Claim.query.filter_by(claimant_id=claimant_id).order_by(Claim.submitted_at.desc()).all()
+    return jsonify([claim_summary_dict(c) for c in claims]), 200
 
 
 @claims_bp.get('/pending')
 @role_required('guard', 'admin')
 def pending_claims():
-    # TODO: return claims where status == 'submitted' or 'in_review', ordered by submitted_at
-    return jsonify([]), 200
+    claims = (
+        Claim.query
+        .filter(Claim.status.in_(['submitted', 'in_review']))
+        .order_by(Claim.submitted_at.asc())
+        .all()
+    )
+    return jsonify([claim_summary_dict(c) for c in claims]), 200
 
 
 @claims_bp.get('/<int:claim_id>')
 @role_required('guard', 'admin')
 def get_claim(claim_id):
-    # TODO: return full claim including private fields (identifying_marks, hidden_details)
-    # TODO: also return the item's private_details for side-by-side comparison
-    return jsonify({'message': 'get_claim – TODO'}), 501
+    claim = Claim.query.get_or_404(claim_id)
+    item = claim.item
+
+    # This is the data behind mockup page 12's side-by-side comparison:
+    # the claimant's private answers on the left, the item's stored
+    # private record on the right. The guard compares them by eye.
+    return jsonify({
+        'id': claim.id,
+        'reference': claim.reference,
+        'status': claim.status,
+        'submittedAt': claim.submitted_at.isoformat(),
+        'claimantAnswers': {
+            'identifyingMarks': claim.identifying_marks,
+            'hiddenDetails': claim.hidden_details,
+            'lostWhenWhere': claim.lost_when_where,
+            'proofUrl': claim.proof_url,
+        },
+        'itemRecord': {
+            'reference': item.reference,
+            'category': item.category,
+            'privateDetails': item.private_details,
+            'loggedAt': item.logged_at.isoformat(),
+        },
+    }), 200
 
 
 @claims_bp.patch('/<int:claim_id>/decision')
 @role_required('guard')
 def decide(claim_id):
-    # TODO: validate decision is 'approved' or 'rejected'
-    # TODO: require decision_reason if rejecting
-    # TODO: update claim.status, claim.reviewed_by_id, claim.reviewed_at
-    # TODO: if approved, item status stays claim_pending (collected after handover)
-    # TODO: if rejected, item status → in_store (available for new claims)
-    # TODO: write AuditLog, return updated claim
-    return jsonify({'message': 'decide – TODO'}), 501
+    claim = Claim.query.get_or_404(claim_id)
+    item = claim.item
+
+    decision = request.json.get('decision') if request.is_json else None
+    reason = request.json.get('reason') if request.is_json else None
+
+    if decision not in ('approved', 'rejected'):
+        return jsonify({'error': "decision must be 'approved' or 'rejected'"}), 400
+    if decision == 'rejected' and not reason:
+        return jsonify({'error': 'reason is required when rejecting a claim'}), 400
+
+    claim.status = decision
+    claim.decision_reason = reason
+    claim.reviewed_by_id = get_jwt_identity()
+    claim.reviewed_at = datetime.now(timezone.utc)
+
+    if decision == 'approved':
+        # Item stays claim_pending — it only becomes collected once the
+        # owner physically shows up, is ID-checked, and signs (handover.py).
+        pass
+    else:
+        # Rejected: free the item up so someone else can claim it.
+        item.status = 'in_store'
+
+    db.session.add(AuditLog(
+        action=f'claim_{decision}',
+        actor_id=get_jwt_identity(),
+        record_type='claim',
+        record_id=claim.reference,
+        detail=reason,
+    ))
+    db.session.commit()
+
+    return jsonify(claim_summary_dict(claim)), 200
