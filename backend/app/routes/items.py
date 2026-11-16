@@ -20,9 +20,24 @@ ALLOWED_IMAGE_TYPES = {'jpg', 'jpeg', 'png'}
 
 @items_bp.get('/')
 def list_items():
-    # TODO: query params — q (text search), category, date_range, area
-    # TODO: return paginated list of item.to_public_dict()
-    return jsonify([]), 200
+    # request.args holds query-string params, e.g. /api/items?category=Bags&q=backpack
+    query = Item.query
+
+    search_text = request.args.get('q')
+    if search_text:
+        # ilike = case-insensitive LIKE. The %...% means "contains this text anywhere".
+        query = query.filter(Item.public_description.ilike(f'%{search_text}%'))
+
+    category = request.args.get('category')
+    if category:
+        query = query.filter(Item.category == category)
+
+    area = request.args.get('area')
+    if area:
+        query = query.filter(Item.location_found == area)
+
+    items = query.order_by(Item.date_found.desc()).all()
+    return jsonify([item.to_public_dict() for item in items]), 200
 
 
 @items_bp.get('/<int:item_id>')
