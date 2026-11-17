@@ -6,7 +6,6 @@
 // On success: redirect to /student/my-claims (or home if no pending claim)
 // See mockup: Page 2 of patapotea.pdf
 
-import { authService } from '../../services/authService'
 export default function CreateAccount() {
   return <div>CreateAccount – TODO</div>
 }
