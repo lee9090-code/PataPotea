@@ -51,16 +51,16 @@ export default function SignIn() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
           {/* Left panel */}
-          <section>
-            <p className="text-sm font-semibold tracking-widest text-amber-600 uppercase mb-6">
+          <section className="bg-[#1B2A3B] rounded-xl p-8 md:p-12 text-white">
+            <p className="text-sm font-semibold tracking-widest text-amber-400 uppercase mb-6">
               LESS SEARCHING. MORE PEACE OF MIND.
             </p>
 
-            <h1 className="text-4xl md:text-5xl font-bold text-navy leading-tight mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
               A familiar place to find what's yours.
             </h1>
 
-            <p className="text-gray-600 text-lg leading-relaxed mb-10 max-w-lg">
+            <p className="text-gray-300 text-lg leading-relaxed mb-10 max-w-lg">
               One place for lost reports, found items, and a safe return to
               the right owner.
             </p>
@@ -72,15 +72,15 @@ export default function SignIn() {
                 'Sign and collect at the desk',
               ].map((step, index) => (
                 <div key={step} className="flex items-center gap-5">
-                  <span className="text-amber-500 font-bold text-lg">
+                  <span className="text-amber-400 font-bold text-lg">
                     0{index + 1}
                   </span>
-                  <p className="text-navy font-medium">{step}</p>
+                  <p className="text-white font-medium">{step}</p>
                 </div>
               ))}
             </div>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-300">
               For Strathmore University students and staff.
             </p>
           </section>
