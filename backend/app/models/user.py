@@ -17,9 +17,13 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     last_active_at = db.Column(db.DateTime)
 
-    # Relationships
-    claims = db.relationship('Claim', back_populates='claimant', lazy='dynamic')
-
+  # Relationships
+claims = db.relationship(
+    'Claim',
+    foreign_keys='Claim.claimant_id',
+    back_populates='claimant',
+    lazy='dynamic'
+)
     def set_password(self, password: str) -> None:
         self.password_hash = generate_password_hash(password)
 
