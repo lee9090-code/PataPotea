@@ -54,16 +54,6 @@ Flask app in `backend/`. See [backend/README.md](backend/README.md) for setup
 instructions (virtual environment, Docker Postgres, migrations) and the full API
 reference.
 
-Routes are split by owner:
-
-| File | Owns | Status |
-|---|---|---|
-| `app/routes/items.py` | Found items (list, detail, log, status) | Done |
-| `app/routes/claims.py` | Claims (submit, list, verify, decide) | Done |
-| `app/routes/handover.py` | Physical collection | Done |
-| `app/routes/auth.py` | Register, login, logout, profile | In progress |
-| `app/routes/admin.py` | Guard accounts, stats, audit log | In progress |
-
 ## Frontend
 
 React, Vite and TypeScript app in `frontend/`, styled with Tailwind CSS.
