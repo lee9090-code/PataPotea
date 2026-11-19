@@ -1,3 +1,4 @@
+
 import api from './api'
 
 export const claimsService = {
@@ -10,10 +11,19 @@ export const claimsService = {
     proofFile?: File
   }) => {
     const form = new FormData()
-    Object.entries(data).forEach(([k, v]) => {
-      if (v !== undefined) form.append(k, v as string | Blob)
+
+    form.append('itemId', String(data.itemId))
+    form.append('identifyingMarks', data.identifyingMarks)
+    form.append('hiddenDetails', data.hiddenDetails)
+    form.append('lostWhenWhere', data.lostWhenWhere)
+
+    if (data.proofFile) {
+      form.append('proof', data.proofFile)
+    }
+
+    return api.post('/claims', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
-    return api.post('/claims', form, { headers: { 'Content-Type': 'multipart/form-data' } })
   },
 
   // Student: list own claims
