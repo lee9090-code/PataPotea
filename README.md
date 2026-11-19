@@ -68,33 +68,3 @@ Pages are organised by audience under `src/pages/`: `public/`, `auth/`, `student
 `guard/`, `admin/`. API calls live in `src/services/`, with one file per backend
 resource (`itemsService.ts`, `claimsService.ts`, `authService.ts`), and
 `src/services/api.ts` holds the shared Axios instance (base URL and auth header).
-
-## Git workflow
-
-- `main`: production ready.
-- `dev`: integration branch; feature branches merge here first.
-- `<yourname>` or `feature/<name>`: one branch per person or feature.
-
-```bash
-# start new work
-git checkout dev
-git pull origin dev
-git checkout -b your-branch-name
-
-# finish work
-git add <files>
-git commit -m "feat: what you built"
-git push origin your-branch-name
-# open a pull request into dev on GitHub, or merge locally:
-git checkout dev
-git pull origin dev
-git merge your-branch-name
-git push origin dev
-```
-
-Rebase your feature branch onto the latest `dev` before merging if `dev` has moved on
-since you branched, to avoid overwriting teammates' work that landed in the meantime.
-
-## Deadline
-
-2 December 2026.
