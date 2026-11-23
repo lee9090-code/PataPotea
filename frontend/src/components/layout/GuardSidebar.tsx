@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 export default function GuardSidebar() {
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
   const links = [
     { to: '/guard', label: 'Dashboard' },
     { to: '/guard/items', label: 'Items' },
