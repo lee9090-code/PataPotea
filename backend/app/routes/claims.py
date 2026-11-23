@@ -28,6 +28,7 @@ def claim_summary_dict(claim):
         'reference': claim.reference,
         'itemReference': claim.item.reference,
         'itemDescription': claim.item.public_description,
+        'claimantName': claim.claimant.full_name,
         'status': claim.status,
         'submittedAt': claim.submitted_at.isoformat(),
     }

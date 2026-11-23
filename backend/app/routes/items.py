@@ -6,6 +6,7 @@ Endpoints:
   POST /api/items           — guard: log a new found item (multipart, with photo)
   PATCH /api/items/<id>/status — guard/admin: update item status
 """
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..extensions import db
@@ -70,6 +71,11 @@ def log_item():
     # This keeps the "happy path" below free of nested if/else.
     if not all([category, public_description, location_found, date_found]):
         return jsonify({'error': 'category, publicDescription, locationFound and dateFound are required'}), 400
+
+    try:
+        date_found = datetime.strptime(date_found, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'error': 'dateFound must be in YYYY-MM-DD format'}), 400
 
     # Optional photo. request.files behaves like a dict: .get() returns None if absent.
     photo = request.files.get('photo')
