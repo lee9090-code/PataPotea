@@ -1,3 +1,4 @@
+
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from ..extensions import db
@@ -11,6 +12,7 @@ class User(db.Model):
     student_or_staff_number = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+
     # Roles: student | staff | guard | admin
     role = db.Column(db.String(10), nullable=False, default='student')
     is_active = db.Column(db.Boolean, default=True, nullable=False)
@@ -19,8 +21,10 @@ class User(db.Model):
 
     # Relationships
     claims = db.relationship(
-        'Claim', back_populates='claimant', lazy='dynamic',
+        'Claim',
         foreign_keys='Claim.claimant_id',
+        back_populates='claimant',
+        lazy='dynamic'
     )
 
     def set_password(self, password: str) -> None:
