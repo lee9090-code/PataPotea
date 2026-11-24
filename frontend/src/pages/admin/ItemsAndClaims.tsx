@@ -124,20 +124,16 @@ export default function ItemsAndClaims() {
         setLoading(true)
         setError('')
 
-        const response = await api.get('/admin/items-claims')
+        const response = await api.get('/admin/items-claims', {
+          params: { tab: activeTab },
+        })
         const data = response.data
 
-        let selectedRecords: RecordRow[] = []
-
-        if (Array.isArray(data)) {
-          selectedRecords = data.filter((record: RecordRow) => {
-            if (!record.type) return true
-            return record.type.toLowerCase() === activeTab.slice(0, -1)
-          })
-        } else if (data && typeof data === 'object') {
-          const key = activeTab
-          selectedRecords = Array.isArray(data[key]) ? data[key] : []
-        }
+        const selectedRecords: RecordRow[] = Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data)
+            ? data
+            : []
 
         setRecords(selectedRecords)
         setPage(1)

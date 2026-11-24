@@ -15,7 +15,7 @@ interface AuditEntry {
   actorRole: string
   recordId: string
   timestamp: string
-  details?: string
+  detail?: string
 }
 
 function formatDate(value: string) {
@@ -44,7 +44,7 @@ function exportAuditCsv(entries: AuditEntry[]) {
     entry.actorRole,
     entry.recordId,
     entry.timestamp,
-    entry.details || '',
+    entry.detail || '',
   ])
 
   const escapeCsv = (value: unknown) =>
@@ -86,7 +86,8 @@ export default function AuditLog() {
         setError('')
 
         const response = await api.get('/admin/audit-log')
-        setEntries(Array.isArray(response.data) ? response.data : [])
+        const data = response.data
+        setEntries(Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [])
       } catch (err: any) {
         setError(
           err?.response?.data?.message ||
@@ -112,7 +113,7 @@ export default function AuditLog() {
           entry.actorName,
           entry.actorRole,
           entry.recordId,
-          entry.details,
+          entry.detail,
         ].some(value => value?.toLowerCase().includes(term))
 
       const matchesRole =
@@ -407,7 +408,7 @@ export default function AuditLog() {
               <div>
                 <p className="text-xs text-gray-500">Details</p>
                 <p className="text-sm text-gray-800 mt-1 whitespace-pre-wrap">
-                  {selectedEntry.details || 'No additional event details provided.'}
+                  {selectedEntry.detail || 'No additional event details provided.'}
                 </p>
               </div>
             </div>

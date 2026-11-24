@@ -12,14 +12,14 @@ interface DashboardStats {
   itemsLogged?: number
   claimsApproved?: number
   itemsCollected?: number
-  unclaimed?: number
+  unclaimedItems?: number
 }
 
 const statCards = [
   { key: 'itemsLogged', label: 'Items logged', color: 'bg-blue-500' },
   { key: 'claimsApproved', label: 'Claims approved', color: 'bg-amber-500' },
   { key: 'itemsCollected', label: 'Items collected', color: 'bg-green-500' },
-  { key: 'unclaimed', label: 'Unclaimed', color: 'bg-gray-500' },
+  { key: 'unclaimedItems', label: 'Unclaimed', color: 'bg-gray-500' },
 ] as const
 
 const chartTitles = [

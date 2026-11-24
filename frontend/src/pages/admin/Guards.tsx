@@ -133,9 +133,7 @@ export default function Guards() {
       setError('')
       setMessage('')
 
-      await api.patch(`/admin/guards/${guard.id}`, {
-        isActive: !active,
-      })
+      await api.patch(`/admin/guards/${guard.id}/${action}`)
 
       setMessage(`Guard account ${action}d successfully.`)
       await loadGuards()
