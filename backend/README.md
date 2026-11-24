@@ -127,3 +127,15 @@ cd backend
 source venv/bin/activate
 python -m pytest
 ```
+
+## Known limitations
+
+- The admin dashboard weekly charts are a placeholder in the frontend. The
+  `/api/admin/stats` endpoint already returns a `weeklyBreakdown` array, but the
+  chart rendering has not been built yet.
+- The `/api/admin/stats` endpoint uses `func.date_trunc`, a Postgres only
+  function. It runs correctly against the project's Postgres database but
+  fails under the SQLite test database, so it is not covered by an automated
+  test, only by its role check.
+- No load testing or accessibility audit has been carried out against any
+  part of the system.
