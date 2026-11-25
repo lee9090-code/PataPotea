@@ -143,6 +143,15 @@ export default function Landing() {
             From lost to found, in three steps.
           </h2>
 
+          <p className="mt-3 text-center">
+            <Link
+              to="/how-it-works"
+              className="text-sm font-semibold text-amber-600 hover:text-amber-700"
+            >
+              See how it works in detail →
+            </Link>
+          </p>
+
           <div className="mt-12 grid gap-10 md:grid-cols-3">
 
             <div>
