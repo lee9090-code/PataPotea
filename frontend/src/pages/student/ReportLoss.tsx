@@ -1,22 +1,52 @@
 
 import { useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
+import { lostReportsService } from '../../services/lostReportsService'
 
 export default function ReportLoss() {
-  const [itemType, setItemType] = useState('')
+  const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
-  const [lastSeen, setLastSeen] = useState('')
-  const [contactEmail, setContactEmail] = useState('')
+  const [locationLost, setLocationLost] = useState('')
+  const [dateLost, setDateLost] = useState('')
   const [confirmed, setConfirmed] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submittedReference, setSubmittedReference] = useState('')
+  const [error, setError] = useState('')
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!confirmed) return
 
-    // Backend endpoint is not available yet.
-    // Do not report success until the backend integration is implemented.
-    setSubmitted(true)
+    setSubmitting(true)
+    setError('')
+
+    try {
+      const response = await lostReportsService.submit({
+        category,
+        description,
+        locationLost,
+        dateLost,
+      })
+
+      setSubmittedReference(response.data.reference)
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.error ||
+        'We could not submit your report. Please try again.'
+      )
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const startNewReport = () => {
+    setCategory('')
+    setDescription('')
+    setLocationLost('')
+    setDateLost('')
+    setConfirmed(false)
+    setSubmittedReference('')
   }
 
   return (
@@ -26,38 +56,37 @@ export default function ReportLoss() {
           Report a lost item
         </h1>
         <p className="mt-2 text-sm text-gray-500">
-          Tell us about something you've lost on campus. We'll use these
-          details to help identify a possible match.
-        </p>
-      </div>
-
-      <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-        <p className="text-sm font-medium text-yellow-800">
-          Reporting service not yet connected
-        </p>
-        <p className="mt-1 text-sm text-yellow-700">
-          You can prepare your report below, but submission will become
-          available once the reporting service is connected.
+          Tell us about something you've lost on campus. Campus security
+          will be able to see your report alongside items that have been
+          handed in.
         </p>
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        {submitted ? (
+        {submittedReference ? (
           <div className="py-8 text-center">
             <h2 className="text-xl font-semibold text-navy">
-              Your report is ready
+              Report submitted
             </h2>
             <p className="mt-3 text-sm text-gray-500">
-              Your information has been validated locally, but it has not
-              been sent or saved. Please try again after the reporting
-              service becomes available.
+              Your reference is <span className="font-semibold text-navy">{submittedReference}</span>.
+              Campus security can now see it. Keep checking Found items for a
+              possible match.
             </p>
-            <button
-              onClick={() => setSubmitted(false)}
-              className="mt-5 rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-white"
-            >
-              Review report
-            </button>
+            <div className="mt-5 flex items-center justify-center gap-3">
+              <button
+                onClick={startNewReport}
+                className="rounded-lg border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-700"
+              >
+                Report another item
+              </button>
+              <Link
+                to="/items"
+                className="rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-white"
+              >
+                Search found items
+              </Link>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -65,20 +94,30 @@ export default function ReportLoss() {
               Item details
             </h2>
 
+            {error && (
+              <div
+                role="alert"
+                className="mb-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+              >
+                {error}
+              </div>
+            )}
+
             <div className="mb-5">
               <label className="mb-2 block text-sm font-medium text-gray-700">
-                Item type
+                Item category
               </label>
               <select
                 required
-                value={itemType}
-                onChange={event => setItemType(event.target.value)}
+                value={category}
+                onChange={event => setCategory(event.target.value)}
                 className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:border-navy focus:outline-none"
               >
                 <option value="">Select item category</option>
                 <option value="Electronics">Electronics</option>
                 <option value="Documents">Documents</option>
                 <option value="Bags">Bags</option>
+                <option value="Bottles">Bottles</option>
                 <option value="Clothing">Clothing</option>
                 <option value="Accessories">Accessories</option>
                 <option value="Keys">Keys</option>
@@ -100,32 +139,33 @@ export default function ReportLoss() {
               />
             </div>
 
-            <div className="mb-5">
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                When and where did you last see it?
-              </label>
-              <textarea
-                required
-                rows={3}
-                value={lastSeen}
-                onChange={event => setLastSeen(event.target.value)}
-                placeholder="e.g. 18 November, around 2 PM, near the university library..."
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-navy focus:outline-none"
-              />
-            </div>
+            <div className="mb-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Where did you lose it?
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={locationLost}
+                  onChange={event => setLocationLost(event.target.value)}
+                  placeholder="e.g. Library, main entrance"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-navy focus:outline-none"
+                />
+              </div>
 
-            <div className="mb-6">
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Contact email
-              </label>
-              <input
-                type="email"
-                required
-                value={contactEmail}
-                onChange={event => setContactEmail(event.target.value)}
-                placeholder="Enter your email address"
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-navy focus:outline-none"
-              />
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  When did you lose it?
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={dateLost}
+                  onChange={event => setDateLost(event.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-navy focus:outline-none"
+                />
+              </div>
             </div>
 
             <div className="mb-6 rounded-lg bg-gray-50 p-4">
@@ -145,10 +185,10 @@ export default function ReportLoss() {
 
             <button
               type="submit"
-              disabled
-              className="w-full cursor-not-allowed rounded-lg bg-gray-400 px-5 py-3 font-semibold text-white"
+              disabled={!confirmed || submitting}
+              className="w-full rounded-lg bg-amber-brand px-5 py-3 font-semibold text-navy disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Reporting service coming soon
+              {submitting ? 'Submitting...' : 'Submit report'}
             </button>
           </form>
         )}

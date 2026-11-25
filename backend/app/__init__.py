@@ -29,11 +29,13 @@ def create_app(config_name: str = None) -> Flask:
     from .routes.claims import claims_bp
     from .routes.handover import handover_bp
     from .routes.admin import admin_bp
+    from .routes.lost_reports import lost_reports_bp
 
-    app.register_blueprint(auth_bp,     url_prefix='/api/auth')
-    app.register_blueprint(items_bp,    url_prefix='/api/items')
-    app.register_blueprint(claims_bp,   url_prefix='/api/claims')
-    app.register_blueprint(handover_bp, url_prefix='/api/handover')
-    app.register_blueprint(admin_bp,    url_prefix='/api/admin')
+    app.register_blueprint(auth_bp,         url_prefix='/api/auth')
+    app.register_blueprint(items_bp,        url_prefix='/api/items')
+    app.register_blueprint(claims_bp,       url_prefix='/api/claims')
+    app.register_blueprint(handover_bp,     url_prefix='/api/handover')
+    app.register_blueprint(admin_bp,        url_prefix='/api/admin')
+    app.register_blueprint(lost_reports_bp, url_prefix='/api/lost-reports')
 
     return app

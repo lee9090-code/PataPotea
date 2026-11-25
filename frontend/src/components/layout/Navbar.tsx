@@ -28,7 +28,7 @@ export default function Navbar() {
       {/* Navigation links */}
       <div className="flex items-center gap-6 text-sm font-medium">
         <Link to="/items" className="text-gray-600 hover:text-navy">
-          Found items
+          Search lost items
         </Link>
 
         {(!user || isStudent) && (

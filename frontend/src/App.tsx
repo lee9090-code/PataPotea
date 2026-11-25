@@ -32,6 +32,7 @@ import ItemsList from './pages/guard/ItemsList'
 import ClaimsList from './pages/guard/ClaimsList'
 import VerifyClaim from './pages/guard/VerifyClaim'
 import Handover from './pages/guard/Handover'
+import LostReports from './pages/guard/LostReports'
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -118,6 +119,7 @@ export default function App() {
               <Route path="/guard/claims" element={<ClaimsList />} />
               <Route path="/guard/claims/:id/verify" element={<VerifyClaim />} />
               <Route path="/guard/handover/:claimId" element={<Handover />} />
+              <Route path="/guard/lost-reports" element={<LostReports />} />
             </Route>
           </Route>
 

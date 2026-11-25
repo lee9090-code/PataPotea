@@ -12,7 +12,7 @@ export default function GuardSidebar() {
     { to: '/guard', label: 'Dashboard' },
     { to: '/guard/items', label: 'Items' },
     { to: '/guard/claims', label: 'Claims' },
-    { to: '/guard/handover', label: 'Handover' },
+    { to: '/guard/lost-reports', label: 'Lost reports' },
   ]
   return (
     <aside className="w-48 min-h-screen bg-navy text-white flex flex-col">
