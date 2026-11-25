@@ -8,6 +8,10 @@ export default function Navbar() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
 
+  const isStudent = user?.role === 'student' || user?.role === 'staff'
+  const workspacePath =
+    user?.role === 'guard' ? '/guard' : user?.role === 'admin' ? '/admin' : '/dashboard'
+
   const handleSignOut = async () => {
     await logout()
     setMenuOpen(false)
@@ -17,7 +21,7 @@ export default function Navbar() {
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
       {/* Logo */}
-      <Link to={user ? '/dashboard' : '/'} className="font-bold text-navy text-lg">
+      <Link to={user ? workspacePath : '/'} className="font-bold text-navy text-lg">
         patapotea
       </Link>
 
@@ -27,19 +31,21 @@ export default function Navbar() {
           Found items
         </Link>
 
-        <Link to="/report" className="text-gray-600 hover:text-navy">
-          Report a loss
-        </Link>
+        {(!user || isStudent) && (
+          <Link to="/report" className="text-gray-600 hover:text-navy">
+            Report a loss
+          </Link>
+        )}
 
-        {user ? (
+        {isStudent ? (
           <Link to="/student/my-claims" className="text-gray-600 hover:text-navy">
             My claims
           </Link>
-        ) : (
+        ) : !user ? (
           <Link to="/how-it-works" className="text-gray-600 hover:text-navy">
             How it works
           </Link>
-        )}
+        ) : null}
 
         {user ? (
           <div className="relative">
@@ -57,20 +63,22 @@ export default function Navbar() {
             {menuOpen && (
               <div className="absolute right-0 top-full mt-3 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
                 <Link
-                  to="/dashboard"
+                  to={workspacePath}
                   onClick={() => setMenuOpen(false)}
                   className="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-navy"
                 >
-                  Dashboard
+                  {isStudent ? 'Dashboard' : 'Go to workspace'}
                 </Link>
 
-                <Link
-                  to="/account"
-                  onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-navy"
-                >
-                  My account
-                </Link>
+                {isStudent && (
+                  <Link
+                    to="/account"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-navy"
+                  >
+                    My account
+                  </Link>
+                )}
 
                 <div className="border-t border-gray-100 my-2" />
 
