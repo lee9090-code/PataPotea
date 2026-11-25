@@ -15,7 +15,7 @@ export default function GuardSidebar() {
     { to: '/guard/lost-reports', label: 'Lost reports' },
   ]
   return (
-    <aside className="w-48 min-h-screen bg-navy text-white flex flex-col">
+    <aside className="w-48 h-screen sticky top-0 bg-navy text-white flex flex-col">
       <div className="p-5 border-b border-navy-light">
         <div className="font-bold text-lg">patapotea</div>
         <div className="text-xs text-gray-400 uppercase tracking-wide mt-1">Guard Workspace</div>

@@ -60,6 +60,13 @@ export default function CreateAccount() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
+        <Link
+          to="/"
+          className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-navy"
+        >
+          ← Back to home
+        </Link>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
           {/* Left panel */}

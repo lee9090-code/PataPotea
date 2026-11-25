@@ -48,6 +48,13 @@ export default function SignIn() {
   return (
     <div className="min-h-screen bg-[#1B2A3B] flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
+        <Link
+          to="/"
+          className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-gray-300 hover:text-white"
+        >
+          ← Back to home
+        </Link>
+
         <div className="text-center mb-8">
           <Link to="/" className="font-bold text-white text-xl">
             patapotea
