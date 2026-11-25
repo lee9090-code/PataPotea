@@ -47,7 +47,7 @@ export default function CreateAccount() {
       })
 
       await login(email.trim().toLowerCase(), password)
-      navigate('/student/my-claims', { replace: true })
+      navigate('/dashboard', { replace: true })
     } catch {
       setError(
         'We could not create your account. Registration may not be available yet. Please try again later.'

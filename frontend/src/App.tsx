@@ -19,6 +19,7 @@ import SignIn from './pages/auth/SignIn'
 import CreateAccount from './pages/auth/CreateAccount'
 
 // Student pages
+import Dashboard from './pages/student/Dashboard'
 import MyClaims from './pages/student/MyClaims'
 import ClaimForm from './pages/student/ClaimForm'
 import ReportLoss from './pages/student/ReportLoss'
@@ -100,6 +101,7 @@ export default function App() {
           {/* Student (requires login) */}
           <Route element={<RequireAuth roles={['student', 'staff']} />}>
             <Route element={<PublicLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/student/my-claims" element={<MyClaims />} />
               <Route path="/items/:id/claim" element={<ClaimForm />} />
               <Route path="/report" element={<ReportLoss />} />

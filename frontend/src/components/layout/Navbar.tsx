@@ -51,6 +51,14 @@ export default function Navbar() {
             {menuOpen && (
               <div className="absolute right-0 top-full mt-3 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
                 <Link
+                  to="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-navy"
+                >
+                  Dashboard
+                </Link>
+
+                <Link
                   to="/account"
                   onClick={() => setMenuOpen(false)}
                   className="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-navy"
