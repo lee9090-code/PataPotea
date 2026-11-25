@@ -8,7 +8,7 @@ import type { Item } from '../../types'
 
 export default function Landing() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
 
   const [searchQuery, setSearchQuery] = useState('')
   const [recentItems, setRecentItems] = useState<Item[]>([])
@@ -74,6 +74,16 @@ export default function Landing() {
 
     navigate(
       `/items?q=${encodeURIComponent(searchQuery.trim())}`
+    )
+  }
+
+  // Avoid flashing the stranger-facing page while the auth check is still
+  // running, or for the instant before a logged-in user gets redirected.
+  if (authLoading || user) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-gray-50">
+        <p className="text-sm text-gray-500">Loading...</p>
+      </main>
     )
   }
 
