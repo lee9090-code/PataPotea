@@ -1,6 +1,6 @@
 
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 export default function Account() {
@@ -35,6 +35,13 @@ export default function Account() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
+      <Link
+        to="/dashboard"
+        className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-navy"
+      >
+        ← Back to dashboard
+      </Link>
+
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-navy">My Account</h1>
         <p className="mt-2 text-sm text-gray-500">

@@ -51,6 +51,13 @@ export default function ReportLoss() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+      <Link
+        to="/dashboard"
+        className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-navy"
+      >
+        ← Back to dashboard
+      </Link>
+
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-navy">
           Report a lost item
