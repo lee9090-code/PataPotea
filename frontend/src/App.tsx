@@ -36,6 +36,7 @@ import LostReports from './pages/guard/LostReports'
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard'
+import Users from './pages/admin/Users'
 import Guards from './pages/admin/Guards'
 import ItemsAndClaims from './pages/admin/ItemsAndClaims'
 import AuditLog from './pages/admin/AuditLog'
@@ -127,6 +128,7 @@ export default function App() {
           <Route element={<RequireAuth roles={['admin']} />}>
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/users" element={<Users />} />
               <Route path="/admin/guards" element={<Guards />} />
               <Route path="/admin/items-claims" element={<ItemsAndClaims />} />
               <Route path="/admin/audit-log" element={<AuditLog />} />

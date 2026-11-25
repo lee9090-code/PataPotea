@@ -39,6 +39,46 @@ def test_stats_returns_counts_and_weekly_breakdown(client, db, guard, admin_head
     assert sum(week['itemsLogged'] for week in body['weeklyBreakdown']) == 2
 
 
+def test_list_users_requires_admin_role(client, student_headers):
+    response = client.get('/api/admin/users', headers=student_headers)
+
+    assert response.status_code == 403
+
+
+def test_list_users_returns_every_role(client, db, student, guard, admin, admin_headers):
+    response = client.get('/api/admin/users', headers=admin_headers)
+
+    assert response.status_code == 200
+    body = response.get_json()
+    roles = {user['role'] for user in body}
+    assert roles == {'student', 'guard', 'admin'}
+    assert all('lastActiveAt' in user for user in body)
+
+
+def test_list_users_filters_by_role(client, db, student, guard, admin, admin_headers):
+    response = client.get(
+        '/api/admin/users',
+        query_string={'role': 'student'},
+        headers=admin_headers,
+    )
+
+    body = response.get_json()
+    assert len(body) == 1
+    assert body[0]['role'] == 'student'
+
+
+def test_list_users_filters_by_search(client, db, student, guard, admin, admin_headers):
+    response = client.get(
+        '/api/admin/users',
+        query_string={'search': student.email},
+        headers=admin_headers,
+    )
+
+    body = response.get_json()
+    assert len(body) == 1
+    assert body[0]['id'] == student.id
+
+
 def test_list_guards_requires_admin_role(client, student_headers):
     response = client.get('/api/admin/guards', headers=student_headers)
 

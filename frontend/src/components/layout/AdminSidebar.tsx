@@ -9,6 +9,7 @@ export default function AdminSidebar() {
   const { logout } = useAuth()
   const links = [
     { to: '/admin', label: 'Dashboard' },
+    { to: '/admin/users', label: 'Users' },
     { to: '/admin/guards', label: 'Guards' },
     { to: '/admin/items-claims', label: 'Items & claims' },
     { to: '/admin/audit-log', label: 'Audit log' },

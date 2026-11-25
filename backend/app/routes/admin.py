@@ -102,6 +102,49 @@ def stats():
 
 
 # =========================================================
+# LIST ALL REGISTERED USERS
+# =========================================================
+
+@admin_bp.get('/users')
+@role_required('admin')
+def list_users():
+
+    role = request.args.get('role', '').strip().lower()
+    search = request.args.get('search', '').strip()
+
+    query = User.query
+
+    if role:
+        query = query.filter_by(role=role)
+
+    if search:
+        term = f'%{search}%'
+        query = query.filter(or_(
+            User.full_name.ilike(term),
+            User.email.ilike(term),
+            User.student_or_staff_number.ilike(term)
+        ))
+
+    users = query.order_by(User.id.asc()).all()
+
+    return jsonify([
+        {
+            **user.to_dict(),
+            'isActive': user.is_active,
+            'lastActiveAt': (
+                user.last_active_at.isoformat()
+                if user.last_active_at else None
+            ),
+            'createdAt': (
+                user.created_at.isoformat()
+                if user.created_at else None
+            )
+        }
+        for user in users
+    ]), 200
+
+
+# =========================================================
 # LIST GUARDS
 # =========================================================
 
