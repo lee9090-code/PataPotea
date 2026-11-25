@@ -17,7 +17,7 @@ export default function Navbar() {
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
       {/* Logo */}
-      <Link to="/" className="font-bold text-navy text-lg">
+      <Link to={user ? '/dashboard' : '/'} className="font-bold text-navy text-lg">
         patapotea
       </Link>
 
@@ -70,14 +70,6 @@ export default function Navbar() {
                   className="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-navy"
                 >
                   My account
-                </Link>
-
-                <Link
-                  to="/student/my-claims"
-                  onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-navy"
-                >
-                  My claims
                 </Link>
 
                 <div className="border-t border-gray-100 my-2" />
