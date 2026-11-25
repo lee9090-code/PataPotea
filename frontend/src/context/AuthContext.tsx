@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = localStorage.getItem('access_token')
     if (token) {
       authService.me()
-        .then((res) => setUser(res.data))
+        .then((res) => setUser(res.data.user))
         .catch(() => localStorage.removeItem('access_token'))
         .finally(() => setLoading(false))
     } else {
