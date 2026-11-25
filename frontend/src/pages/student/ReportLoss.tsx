@@ -70,7 +70,7 @@ export default function ReportLoss() {
             </h2>
             <p className="mt-3 text-sm text-gray-500">
               Your reference is <span className="font-semibold text-navy">{submittedReference}</span>.
-              Campus security can now see it. Keep checking Found items for a
+              Campus security can now see it. Keep checking Search lost items for a
               possible match.
             </p>
             <div className="mt-5 flex items-center justify-center gap-3">
@@ -84,7 +84,7 @@ export default function ReportLoss() {
                 to="/items"
                 className="rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-white"
               >
-                Search found items
+                Search lost items
               </Link>
             </div>
           </div>

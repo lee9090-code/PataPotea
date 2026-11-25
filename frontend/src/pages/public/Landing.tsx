@@ -112,7 +112,7 @@ export default function Landing() {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search items, e.g. backpack"
-                aria-label="Search found items"
+                aria-label="Search lost items"
                 className="min-w-0 flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 text-navy outline-none transition focus:border-navy focus:ring-2 focus:ring-navy/10"
               />
 
@@ -120,7 +120,7 @@ export default function Landing() {
                 type="submit"
                 className="rounded-lg bg-navy px-6 py-3 font-semibold text-white transition hover:bg-navy-light"
               >
-                Search found items
+                Search lost items
               </button>
             </form>
 
