@@ -155,6 +155,70 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* FEATURES SECTION */}
+      <section className="px-6 py-16">
+        <div className="mx-auto max-w-7xl">
+
+          <h2 className="text-center text-3xl font-bold text-navy">
+            Everything you need to get it back.
+          </h2>
+
+          <p className="mt-3 text-center text-gray-600">
+            One system for the whole campus, from the first search to the final handover.
+          </p>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+            <Link
+              to="/items"
+              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-navy"
+            >
+              <h3 className="text-lg font-bold text-navy">
+                Browse found items
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                Search everything handed in to campus security by category,
+                date, or location.
+              </p>
+            </Link>
+
+            <Link
+              to="/report"
+              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-navy"
+            >
+              <h3 className="text-lg font-bold text-navy">
+                Report a loss
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                Tell us what went missing so you can track it from your
+                account as soon as it turns up.
+              </p>
+            </Link>
+
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-navy">
+                Private verification
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                Prove an item is yours with details only you would know.
+                Nothing private is ever shown publicly.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-navy">
+                Guard-checked handover
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                Every collection is checked in person, with ID verification
+                and a signature on file.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* THREE STEPS SECTION */}
       <section className="border-y border-gray-200 bg-white px-6 py-16">
         <div className="mx-auto max-w-7xl">
@@ -260,6 +324,51 @@ export default function Landing() {
               No items are currently available to display. Check back soon.
             </p>
           )}
+
+        </div>
+      </section>
+
+      {/* ABOUT SECTION */}
+      <section className="border-y border-gray-200 bg-white px-6 py-16">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2 lg:items-center">
+
+          <div>
+            <p className="text-sm font-bold uppercase tracking-widest text-amber-brand">
+              About Patapotea
+            </p>
+
+            <h2 className="mt-3 text-3xl font-bold text-navy">
+              Built for Strathmore, by people who lose things too.
+            </h2>
+
+            <p className="mt-5 leading-relaxed text-gray-600">
+              Patapotea is Strathmore University's lost and found system,
+              connecting students and staff who have lost something with
+              campus security, who log every item that gets handed in.
+            </p>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="rounded-xl bg-gray-50 p-5">
+              <h3 className="font-semibold text-navy">
+                Privacy by design
+              </h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Only enough detail to recognise an item is ever shown
+                publicly. Proof of ownership stays private.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-gray-50 p-5">
+              <h3 className="font-semibold text-navy">
+                A clear record
+              </h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Every claim, approval, and handover is logged, so nothing
+                gets returned to the wrong person.
+              </p>
+            </div>
+          </div>
 
         </div>
       </section>
