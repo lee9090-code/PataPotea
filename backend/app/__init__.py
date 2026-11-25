@@ -14,6 +14,11 @@ def create_app(config_name: str = None) -> Flask:
     cfg = config_name or os.getenv('FLASK_ENV', 'development')
     app.config.from_object(config[cfg])
 
+    # Routes are defined with a trailing slash (e.g. '/items/'). Without this,
+    # a request to '/items' gets a 308 redirect, which browsers refuse to
+    # follow during a CORS preflight, breaking every authenticated request.
+    app.url_map.strict_slashes = False
+
     # Ensure upload folder exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
