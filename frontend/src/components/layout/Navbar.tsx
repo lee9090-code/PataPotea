@@ -31,9 +31,15 @@ export default function Navbar() {
           Report a loss
         </Link>
 
-        <Link to="/how-it-works" className="text-gray-600 hover:text-navy">
-          How it works
-        </Link>
+        {user ? (
+          <Link to="/student/my-claims" className="text-gray-600 hover:text-navy">
+            My claims
+          </Link>
+        ) : (
+          <Link to="/how-it-works" className="text-gray-600 hover:text-navy">
+            How it works
+          </Link>
+        )}
 
         {user ? (
           <div className="relative">
