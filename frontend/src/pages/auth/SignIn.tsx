@@ -20,7 +20,7 @@ export default function SignIn() {
     switch (user.role) {
       case 'student':
       case 'staff':
-        navigate('/browse', { replace: true })
+        navigate('/items', { replace: true })
         break
       case 'guard':
         navigate('/guard', { replace: true })

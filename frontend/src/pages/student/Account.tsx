@@ -15,7 +15,7 @@ export default function Account() {
 
     try {
       await logout()
-      navigate('/signin', { replace: true })
+      navigate('/auth/sign-in', { replace: true })
     } catch {
       setError('Unable to sign out. Please try again.')
       setSigningOut(false)

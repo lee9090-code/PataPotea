@@ -81,7 +81,7 @@ export default function MyClaims() {
             and submit a claim.
           </p>
           <Link
-            to="/browse"
+            to="/items"
             className="inline-block mt-5 rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
           >
             Browse found items

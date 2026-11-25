@@ -113,7 +113,7 @@ export default function ClaimForm() {
           We could not load the item you want to claim.
         </p>
         <button
-          onClick={() => navigate('/browse')}
+          onClick={() => navigate('/items')}
           className="mt-5 rounded-lg bg-navy px-5 py-3 text-sm font-semibold text-white"
         >
           Browse items
