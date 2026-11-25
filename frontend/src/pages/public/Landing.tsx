@@ -1,16 +1,36 @@
 
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import { itemsService } from '../../services/itemsService'
 import ItemCard from '../../components/items/ItemCard'
 import type { Item } from '../../types'
 
 export default function Landing() {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [searchQuery, setSearchQuery] = useState('')
   const [recentItems, setRecentItems] = useState<Item[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Logged-in users land on their own workspace, not the stranger-facing page.
+  useEffect(() => {
+    if (!user) return
+
+    switch (user.role) {
+      case 'student':
+      case 'staff':
+        navigate('/dashboard', { replace: true })
+        break
+      case 'guard':
+        navigate('/guard', { replace: true })
+        break
+      case 'admin':
+        navigate('/admin', { replace: true })
+        break
+    }
+  }, [user, navigate])
 
   useEffect(() => {
     let isMounted = true
