@@ -24,6 +24,21 @@ def test_stats_requires_admin_role(client, guard_headers):
     assert response.status_code == 403
 
 
+def test_stats_returns_counts_and_weekly_breakdown(client, db, guard, admin_headers):
+    log_item(db, guard, reference='PT-0001', status='collected')
+    log_item(db, guard, reference='PT-0002', status='unclaimed')
+
+    response = client.get('/api/admin/stats', headers=admin_headers)
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body['itemsLogged'] == 2
+    assert body['itemsCollected'] == 1
+    assert body['unclaimedItems'] == 1
+    assert len(body['weeklyBreakdown']) == 6
+    assert sum(week['itemsLogged'] for week in body['weeklyBreakdown']) == 2
+
+
 def test_list_guards_requires_admin_role(client, student_headers):
     response = client.get('/api/admin/guards', headers=student_headers)
 

@@ -130,12 +130,13 @@ python -m pytest
 
 ## Known limitations
 
-- The admin dashboard weekly charts are a placeholder in the frontend. The
-  `/api/admin/stats` endpoint already returns a `weeklyBreakdown` array, but the
-  chart rendering has not been built yet.
-- The `/api/admin/stats` endpoint uses `func.date_trunc`, a Postgres only
-  function. It runs correctly against the project's Postgres database but
-  fails under the SQLite test database, so it is not covered by an automated
-  test, only by its role check.
+- The admin dashboard weekly "Unclaimed" chart has no data, since the `Item`
+  model has no timestamp for when an item's status changed to `unclaimed`.
+  The total unclaimed count is accurate, only its weekly breakdown is not
+  tracked.
+- "Create guard account" does not send an email. It returns a temporary
+  password directly in the API response, which the admin frontend displays
+  once so it can be shared with the guard manually. There is no email
+  invitation system.
 - No load testing or accessibility audit has been carried out against any
   part of the system.

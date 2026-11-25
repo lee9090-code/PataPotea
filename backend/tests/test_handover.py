@@ -79,3 +79,27 @@ def test_record_handover_marks_claim_and_item_collected(client, db, guard, stude
     db.session.refresh(claim)
     assert item.status == 'collected'
     assert claim.status == 'collected'
+
+
+def test_handover_stats_requires_guard_or_admin(client, student_headers):
+    response = client.get('/api/handover/stats', headers=student_headers)
+
+    assert response.status_code == 403
+
+
+def test_handover_stats_counts_collected_today(client, db, guard, student, guard_headers):
+    assert client.get('/api/handover/stats', headers=guard_headers).get_json() == {
+        'collectedToday': 0
+    }
+
+    item, claim = make_approved_claim(db, guard, student)
+    client.post(
+        f'/api/handover/{claim.id}',
+        json={'idChecked': True, 'signatureData': 'data:image/png;base64,xyz'},
+        headers=guard_headers,
+    )
+
+    response = client.get('/api/handover/stats', headers=guard_headers)
+
+    assert response.status_code == 200
+    assert response.get_json() == {'collectedToday': 1}

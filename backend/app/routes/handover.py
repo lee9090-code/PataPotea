@@ -2,7 +2,10 @@
 HANDOVER ROUTES  — owned by: Backend Person 2
 Endpoints:
   POST /api/handover/<claim_id> — guard: record ID check + signature → mark collected
+  GET  /api/handover/stats      — guard: items collected today
 """
+from datetime import datetime, timezone, time
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity
 from ..extensions import db
@@ -10,6 +13,20 @@ from ..models import Claim, Handover, AuditLog
 from ..utils.decorators import role_required
 
 handover_bp = Blueprint('handover', __name__)
+
+
+@handover_bp.get('/stats')
+@role_required('guard', 'admin')
+def handover_stats():
+    today_start = datetime.combine(
+        datetime.now(timezone.utc).date(), time.min
+    )
+
+    collected_today = Handover.query.filter(
+        Handover.collected_at >= today_start
+    ).count()
+
+    return jsonify({'collectedToday': collected_today}), 200
 
 
 @handover_bp.post('/<int:claim_id>')

@@ -16,13 +16,13 @@ GET    /api/admin/audit-log
 from flask import Blueprint, request, jsonify, Response
 from flask_jwt_extended import get_jwt_identity
 from datetime import datetime, timedelta, timezone, date, time
-from sqlalchemy import func, or_
+from sqlalchemy import or_
 import secrets
 import csv
 import io
 
 from ..extensions import db
-from ..models import User, Item, Claim, AuditLog
+from ..models import User, Item, Claim, Handover, AuditLog
 from ..utils.decorators import role_required
 
 
@@ -45,36 +45,40 @@ def stats():
     today = datetime.now(timezone.utc).date()
     current_week = today - timedelta(days=today.weekday())
     six_weeks_ago = current_week - timedelta(weeks=5)
+    six_weeks_ago_start = datetime.combine(
+        six_weeks_ago, datetime.min.time(), tzinfo=timezone.utc
+    )
 
-    weekly_items = db.session.query(
-        func.date_trunc('week', Item.logged_at).label('week'),
-        func.count(Item.id)
-    ).filter(
-        Item.logged_at >= datetime.combine(
-            six_weeks_ago, datetime.min.time(), tzinfo=timezone.utc
+    def week_start_of(moment):
+        day = moment.date() if hasattr(moment, 'date') else moment
+        return day - timedelta(days=day.weekday())
+
+    def bucket_counts(timestamps):
+        counts = {}
+        for moment in timestamps:
+            if moment is None:
+                continue
+            bucket = week_start_of(moment)
+            counts[bucket] = counts.get(bucket, 0) + 1
+        return counts
+
+    item_counts = bucket_counts(
+        logged_at for (logged_at,) in db.session.query(Item.logged_at).filter(
+            Item.logged_at >= six_weeks_ago_start
         )
-    ).group_by(
-        func.date_trunc('week', Item.logged_at)
-    ).all()
+    )
 
-    weekly_claims = db.session.query(
-        func.date_trunc('week', Claim.submitted_at).label('week'),
-        func.count(Claim.id)
-    ).filter(
-        Claim.submitted_at >= datetime.combine(
-            six_weeks_ago, datetime.min.time(), tzinfo=timezone.utc
+    claim_counts = bucket_counts(
+        submitted_at for (submitted_at,) in db.session.query(Claim.submitted_at).filter(
+            Claim.submitted_at >= six_weeks_ago_start
         )
-    ).group_by(
-        func.date_trunc('week', Claim.submitted_at)
-    ).all()
+    )
 
-    item_counts = {
-        week.date(): count for week, count in weekly_items
-    }
-
-    claim_counts = {
-        week.date(): count for week, count in weekly_claims
-    }
+    collected_counts = bucket_counts(
+        collected_at for (collected_at,) in db.session.query(Handover.collected_at).filter(
+            Handover.collected_at >= six_weeks_ago_start
+        )
+    )
 
     weekly_breakdown = []
 
@@ -84,7 +88,8 @@ def stats():
         weekly_breakdown.append({
             'weekStarting': week_start.isoformat(),
             'itemsLogged': item_counts.get(week_start, 0),
-            'claimsSubmitted': claim_counts.get(week_start, 0)
+            'claimsSubmitted': claim_counts.get(week_start, 0),
+            'itemsCollected': collected_counts.get(week_start, 0),
         })
 
     return jsonify({

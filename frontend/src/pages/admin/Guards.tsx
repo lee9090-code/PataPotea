@@ -1,11 +1,3 @@
-// TODO: Search input + "+ Add guard" button
-// TODO: Table: Guard | Email | Account state (Active/Inactive) | Last active | Actions (Edit · Deactivate/Activate)
-// TODO: "Add or edit guard" inline form:
-//   - Full name, University email inputs
-//   - "Send guard invitation" + "Cancel" buttons
-//   - Deactivation note: "removes access but keeps past actions in audit log"
-// See mockup: Page 9 of patapotea.pdf
-
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import api from '../../services/api'
@@ -30,6 +22,7 @@ export default function Guards() {
   const [showForm, setShowForm] = useState(false)
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
+  const [newGuardPassword, setNewGuardPassword] = useState<{ email: string; password: string } | null>(null)
 
   const loadGuards = async () => {
     try {
@@ -68,6 +61,7 @@ export default function Guards() {
     setEmail('')
     setError('')
     setMessage('')
+    setNewGuardPassword(null)
     setShowForm(true)
   }
 
@@ -85,6 +79,7 @@ export default function Guards() {
     setEditingGuard(null)
     setFullName('')
     setEmail('')
+    setNewGuardPassword(null)
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -100,15 +95,24 @@ export default function Guards() {
           email: email.trim(),
         })
         setMessage('Guard account updated.')
+        setShowForm(false)
+        setEditingGuard(null)
+        setFullName('')
+        setEmail('')
       } else {
-        await api.post('/admin/guards', {
+        const response = await api.post('/admin/guards', {
           fullName: fullName.trim(),
           email: email.trim(),
         })
-        setMessage('Guard invitation request submitted.')
+        setNewGuardPassword({
+          email: email.trim(),
+          password: response.data.temporaryPassword,
+        })
+        setMessage('Guard account created. Share the temporary password below with them directly, there is no email invitation system yet.')
+        setFullName('')
+        setEmail('')
       }
 
-      closeForm()
       await loadGuards()
     } catch (err: any) {
       setError(
@@ -195,6 +199,20 @@ export default function Guards() {
             </button>
           </div>
 
+          {newGuardPassword && (
+            <div className="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <p className="text-sm font-semibold text-amber-900">
+                Temporary password for {newGuardPassword.email}
+              </p>
+              <p className="mt-1 font-mono text-sm text-amber-900">
+                {newGuardPassword.password}
+              </p>
+              <p className="mt-2 text-xs text-amber-800">
+                Share this with the guard directly, it will not be shown again.
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -244,7 +262,7 @@ export default function Guards() {
                   ? 'Saving...'
                   : editingGuard
                     ? 'Save changes'
-                    : 'Send guard invitation'}
+                    : 'Create guard account'}
               </button>
             </div>
           </form>

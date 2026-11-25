@@ -1,12 +1,7 @@
-// TODO: Stat cards — Items in store, Pending claims, Collected today
-// TODO: "Claims needing review" table: Item/claim | Person | Status | Updated | Action (Review →)
-// TODO: Pagination (showing 1–4 of 12 pending claims)
-// TODO: "+ Log found item" primary CTA button → /guard/log-item
-// See mockup: Page 5 of patapotea.pdf
-
 
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import api from '../../services/api'
 import { itemsService } from '../../services/itemsService'
 import { claimsService } from '../../services/claimsService'
 import type { Item } from '../../types'
@@ -24,6 +19,7 @@ interface PendingClaim {
 export default function GuardDashboard() {
   const [items, setItems] = useState<Item[]>([])
   const [claims, setClaims] = useState<PendingClaim[]>([])
+  const [collectedToday, setCollectedToday] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [page, setPage] = useState(1)
@@ -35,13 +31,15 @@ export default function GuardDashboard() {
       try {
         setLoading(true)
 
-        const [itemsResponse, claimsResponse] = await Promise.all([
+        const [itemsResponse, claimsResponse, statsResponse] = await Promise.all([
           itemsService.getAll(),
           claimsService.pending(),
+          api.get('/handover/stats'),
         ])
 
         setItems(itemsResponse.data)
         setClaims(claimsResponse.data)
+        setCollectedToday(statsResponse.data.collectedToday)
       } catch {
         setError('Unable to load dashboard information. Check that the backend is running.')
       } finally {
@@ -123,8 +121,8 @@ export default function GuardDashboard() {
           />
           <StatCard
             title="Collected today"
-            value="—"
-            description="Collection statistics not yet provided by the API"
+            value={loading || collectedToday === null ? '...' : String(collectedToday)}
+            description="ID checked & signed"
           />
         </section>
 
