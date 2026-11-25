@@ -165,71 +165,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* FEATURES SECTION */}
-      <section className="px-6 py-16">
-        <div className="mx-auto max-w-7xl">
-
-          <h2 className="text-center text-3xl font-bold text-navy">
-            Everything you need to get it back.
-          </h2>
-
-          <p className="mt-3 text-center text-gray-600">
-            One system for the whole campus, from the first search to the final handover.
-          </p>
-
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-
-            <Link
-              to="/items"
-              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-navy"
-            >
-              <h3 className="text-lg font-bold text-navy">
-                Browse found items
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                Search everything handed in to campus security by category,
-                date, or location.
-              </p>
-            </Link>
-
-            <Link
-              to="/report"
-              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-navy"
-            >
-              <h3 className="text-lg font-bold text-navy">
-                Report a loss
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                Tell us what went missing so you can track it from your
-                account as soon as it turns up.
-              </p>
-            </Link>
-
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-navy">
-                Private verification
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                Prove an item is yours with details only you would know.
-                Nothing private is ever shown publicly.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-navy">
-                Guard-checked handover
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                Every collection is checked in person, with ID verification
-                and a signature on file.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* THREE STEPS SECTION */}
+      {/* HOW IT WORKS SECTION */}
       <section className="border-y border-gray-200 bg-white px-6 py-16">
         <div className="mx-auto max-w-7xl">
 
@@ -260,6 +196,15 @@ export default function Landing() {
               <p className="mt-3 leading-relaxed text-gray-600">
                 Tell us what you lost or search items already handed in.
               </p>
+
+              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold">
+                <Link to="/items" className="text-navy hover:underline">
+                  Search lost items →
+                </Link>
+                <Link to="/report" className="text-navy hover:underline">
+                  Report a loss →
+                </Link>
+              </div>
             </div>
 
             <div>
@@ -274,6 +219,10 @@ export default function Landing() {
               <p className="mt-3 leading-relaxed text-gray-600">
                 Spot a match? Share private details so the guard can verify it.
               </p>
+
+              <p className="mt-4 text-sm text-gray-500">
+                Nothing private is ever shown publicly.
+              </p>
             </div>
 
             <div>
@@ -287,6 +236,10 @@ export default function Landing() {
 
               <p className="mt-3 leading-relaxed text-gray-600">
                 Once approved, bring your ID, sign, and collect at the desk.
+              </p>
+
+              <p className="mt-4 text-sm text-gray-500">
+                Every handover is checked in person and logged.
               </p>
             </div>
 
