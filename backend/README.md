@@ -27,6 +27,23 @@ python run.py
 
 The API runs at `http://localhost:5000`.
 
+### Demo data
+
+```bash
+python seed.py
+```
+
+Creates the shared guard, admin and student test accounts, plus sample found
+items, lost reports, and a couple of claims (one collected end to end, one
+still pending guard review) so there is something to look at right after
+setup. Safe to run more than once, it skips anything that already exists.
+
+| Role | Email | Password |
+|------|-------|----------|
+| Guard | guard@patapotea.test | Guard123! |
+| Admin | admin@patapotea.test | Admin123! |
+| Student | student@patapotea.test | Student123! |
+
 ### Why `sqlalchemy==2.0.35` is pinned
 
 `requirements.txt` pins SQLAlchemy to the 2.0.x line. Without the pin, pip resolves to
