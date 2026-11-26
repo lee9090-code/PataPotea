@@ -1,0 +1,13 @@
+# Prevent git from touching line endings in binary files. Without this, a
+# Windows machine with core.autocrlf=true can silently corrupt these files on
+# checkout, since git falls back to guessing from file content.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
